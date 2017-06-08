@@ -3,23 +3,9 @@
 #include <stdio.h>
 #include <cs50.h>
 #include <string.h>
-char *get_salt(string s);
-string one_digit_pass(string hs, string salt);
-string two_digit_pass(char *hs, string salt);
-string three_digit_pass(char *hs, string salt);
 
-int main(int argc, char *argv[])
-{
-  string test = crypt("zzz", "50"); 
-  printf("test = %s\n", test);
-  printf("%s should equals %s\n", test, three_digit_pass(argv[1], "50"));
-  /* printf("%s should equals %s\n", test, two_digit_pass(argv[1], "50")); */
-  /* printf("crypting b : %s\n", crypt("b", "50")); */
-  /* printf("%s should equals %s\n", test, one_digit_pass(argv[1], "50")); */
-  /* printf("%s\n", crypt("rofl", "50")); */   
-  /* printf("%s\n", get_salt(argv[1])); */
-        return 0;
-}
+
+string ALPHA = "ABCDEFGHIJKLMNOPQRSTUVXZYabcdefghijklmnopqrstuvxzy";
 
 char *get_salt(string s)
 {
@@ -29,65 +15,81 @@ char *get_salt(string s)
         return salt;
 }
 
-string one_digit_pass(char *hs, string salt)
+bool match_pwd(string candidate, string actual, string salt)
 {
-        string alpha = "ABCDEFGHIJKLMNOPQRSTUVXZYabcdefghijklmnopqrstuvxzy";
-        char *try = (char *)malloc(1);
-        printf("%s HASH\n", hs);
-        for(int i = 0, n = strlen(alpha); i < n; i++){
-                try[0] = alpha[i];
-                char *target = crypt(try, salt);
-                printf("try is : %s\n", try);
-                printf("target is: %s\n", target);
-                printf("hs is: %s\n", hs);
-                printf("%d\n", strcmp(target, hs));
-                if (strcmp(target, hs) == 0){
-                        printf("hash inside IF is %s\n", hs);
-                        printf("crypt is : %s\n", target);
-                        return try;
-                }
+        if (strcmp(actual, crypt(candidate, salt)) == 0) {
+                return true;
         }
-        return "not found";
+        return false;
 }
 
-string two_digit_pass(char *hs, string salt)
+string brute_force(string cripted, string salt)
 {
-        string alpha = "ABCDEFGHIJKLMNOPQRSTUVXZYabcdefghijklmnopqrstuvxzy";
-        char *try = (char *)malloc(2);
-        for(int i = 0, n = strlen(alpha); i < n; i++){
-                try[0] = alpha[i];
-                for(int ii = 0, nn = strlen(alpha); ii < nn; ii++){
-                        try[1] = alpha[ii];
-                        char *target = crypt(try, salt);
-                        printf("try is %s\n", try);
-                        printf("target is %s\n", target);
-                        printf("hs is %s\n", hs);
-                        if (strcmp(target, hs) == 0){
-                                return try;
-                        }
-                }
-
-        }
-        return "not found";
-}
-
-string three_digit_pass(char *hs, string salt)
-{
-        
-        string alpha = "ABCDEFGHIJKLMNOPQRSTUVXZYabcdefghijklmnopqrstuvxzy";
-        char *try = (char *)malloc(3);
-        for (int i = 0, n = strlen(alpha); i < n; i++){
-                try[0] = alpha[i];
-                for (int ii = 0, nn = strlen(alpha); i < nn; ii++){
-                        try[1] = alpha[ii];
-                        for(int iii = 0, nnn = strlen(alpha); i < nnn; iii++) {
-                                try[2] = alpha[iii];
-                                char *target = crypt(try, salt);
-                                if (strcmp(target, hs) == 0) {
-                                        return try;
+        char *candidate = (char *)malloc(4);
+        int n = strlen(ALPHA);
+        for (int i = 0; i < n; i++) {
+                candidate[0] = ALPHA[i];
+                /* printf("candidate = %s\n", candidate); */
+                if (match_pwd(candidate, cripted, salt)) {
+                        printf("%s\n", candidate);
+                        return "found";
+                }}
+        // second level
+        for (int i = 0; i < n; i++) {
+                candidate[0] = ALPHA[i];
+                for (int ii=0; ii < n; ii++) {
+                        candidate[1] = ALPHA[ii];
+                        /* printf("%s\n", candidate); */
+                        if (match_pwd(candidate, cripted, salt)) {
+                                printf("%s\n", candidate);
+                                return "found";
+                        }}}
+        //third level
+        for (int i = 0; i < n; i++) {
+                candidate[0] = ALPHA[i];
+                for (int ii = 0; ii < n; ii++) {
+                        candidate[1] = ALPHA[ii];
+                        for (int iii=0; iii < n; iii++) {
+                                candidate[2] = ALPHA[iii];
+                                /* printf("%s\n", candidate); */
+                                if (match_pwd(candidate, cripted, salt)) {
+                                        printf("%s\n", candidate);
+                                        return "found";
                                 }
                         }
                 }
         }
-        return "not found";
+        for (int i = 0; i < n; i++) {
+                candidate[0] = ALPHA[i];
+                for (int ii = 0; ii < n; ii++) {
+                        candidate[1] = ALPHA[ii];
+                        for (int iii=0; iii < n; iii++) {
+                                candidate[2] = ALPHA[iii];
+                                for (int iiii=0; iiii < n; iiii++) {
+                                        candidate[3] = ALPHA[iiii];
+                                        /* printf("%s\n", candidate); */
+                                        if (match_pwd(candidate, cripted, salt)) {
+                                                printf("%s\n", candidate);
+                                                return "found";
+                                        }
+                                }
+                        }
+                }
+        }
+
+printf("not found\n");
+return "";
+}
+
+
+int main(int argc, char *argv[])
+{
+        char *salt = (char *)malloc(2);
+        salt[0] = argv[1][0];
+        salt[1] = argv[1][1];
+        printf("%d\n", match_pwd("rofl", "50fkUxYHbnXGw", "50"));
+        printf("salt = %s, argv[1] = %s\n", salt, argv[1]);
+        brute_force(argv[1], salt);
+
+        return 0;
 }
