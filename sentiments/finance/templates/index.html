@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{ user["username"] }} Stocks
+{% endblock %}
+
+{% block main %}
+<table style="width:100%">
+        <thead>
+                <tr>
+                        <th>STOCK</th>
+                        <th>SHARES</th>
+                        <th>PRICE</th>
+                        <th>TOTAL</th>
+                </tr>
+        </thead>
+
+        <tbody>
+        {% for p in port %}
+        <tr>
+                <td>{{ p["quote"] }}</td>
+                <td>{{ p["shares"] }}</td>
+                <td>{{ prices[p["quote"]] }}</td>
+                <td>{{ prices[p["quote"]] * p["shares"]}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+</table>
+
+<table style="width:100%">
+        <thead>
+        <tr>
+                <th>CASH</th>
+                <th>INVESTMENT</th>
+                <th>TOTAL</th>
+        </tr>
+        </thead>
+        <tbody>
+                <tr>
+                        <td>{{ user["cash"] }}</td>
+                        <td> {{ investment }}</td>
+                        <td> {{ total }}</td>
+                </tr>
+{% endblock %}

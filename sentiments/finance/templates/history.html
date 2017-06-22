@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Transaction History
+{% endblock %}
+
+{% block main %}
+<table style="width:100%">
+        <thead>
+                <tr>
+                        <th>ACTION</th>
+                        <th>STOCK</th>
+                        <th>SHARES</th>
+                        <th>PRICE</th>
+                </tr>
+        </thead>
+
+        <tbody>
+        {% for h in history %}
+        <tr>
+                <td>{{ h["type"] }}</td>
+                <td>{{ h["quote"] }}</td>
+                <td>{{ h["shares"] }}</td>
+                <td>{{ h["price"] }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+</table>
+
+{% endblock %}

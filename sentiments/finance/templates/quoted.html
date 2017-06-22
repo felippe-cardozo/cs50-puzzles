@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{ q["name"] }}
+{% endblock %}
+
+{% block main %}
+        <p> Name: {{q["name"]}}</p>
+        <p> Symbol: {{q["symbol"]}}</p>
+        <p> Price of a share: {{q["price"]}}</p>
+{% endblock %}
